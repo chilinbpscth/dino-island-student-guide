@@ -530,3 +530,7 @@ button:disabled { opacity: 0.45; pointer-events: none; }
 .cert-mascot{display:block;width:100px;height:auto;margin:0 auto 8px}
 .cert-crest{display:block;width:48px;height:auto;margin:0 auto 10px}
 .dino-hero{display:none}
+
+.zone-card .zone-art{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;margin-bottom:8px;background:#e4f0dc}
+.zone-card .emoji{display:none}
+.guide-mascot{width:96px;height:96px;object-fit:cover;border-radius:16px;background:#e4f0dc}
