@@ -137,7 +137,8 @@
   function renderWelcome() {
     app.innerHTML = `
       <section class="screen-welcome">
-        <div class="dino-hero" aria-hidden="true">🦕</div>
+        <img class="mascot-hero" src="img/demo-dino.webp" alt="志蓮恐龍公仔" width="200" height="200" />
+        <img class="brand-logo" src="img/logo.webp" alt="佛教志蓮小學" width="120" />
         <h1>智取恐龍島</h1>
         <p class="hint">開放日探索站 · 照顧小恐龍</p>
         <div class="theme-q">
@@ -165,7 +166,7 @@
     const n = state.zoneIds.length;
     return `
       <div class="topbar">
-        <div class="who">👋 ${escapeHtml(state.name)}</div>
+        <div class="who"><img class="mascot-mini" src="img/pose-pointing.webp" alt="" /> ${escapeHtml(state.name)}</div>
         <div class="progress-pill">${n} / ${ZONES.length} 站</div>
         <div class="actions">
           <button type="button" class="ghost" id="btnCert">證書</button>
@@ -211,6 +212,9 @@
     const ready = state.zoneIds.length >= CERT_NEED;
     app.innerHTML = `
       ${topbar(state)}
+      <div class="map-hero">
+        <img src="img/island-map.png" alt="恐龍島地圖概念" />
+      </div>
       <h2 class="map-title">恐龍島地圖</h2>
       <p class="map-sub">揀一站開始照顧小恐龍 · 完成 ${CERT_NEED} 站或以上可攞證書</p>
       <div class="zone-grid">${cards}</div>
@@ -250,9 +254,12 @@
           <button type="button" class="ghost" id="backMap">←</button>
           <h2>${zone.emoji} ${zone.name} <small>· ${zone.subject || ""}</small></h2>
         </div>
-        <div class="learn-box">
-          <div><b>學咩：</b>${zone.learn || ""}</div>
-          <div><b>點玩：</b>${zone.play || ""}</div>
+        <div class="learn-box with-mascot">
+          <img class="guide-mascot" src="img/pose-macbook.webp" alt="" />
+          <div class="learn-text">
+            <div><b>學咩：</b>${zone.learn || ""}</div>
+            <div><b>點玩：</b>${zone.play || ""}</div>
+          </div>
         </div>
         <div class="round-dots"></div>
         <div class="game-panel" id="gamePanel"></div>
@@ -280,6 +287,8 @@
         ${
           ready
             ? `<div class="cert-card">
+                <img class="cert-mascot" src="img/demo-dino.webp" alt="" />
+                <img class="cert-crest" src="img/crest.webp" alt="校徽" />
                 <h2>恐龍島照顧證書</h2>
                 <p>茲證明</p>
                 <div class="cert-name">${escapeHtml(state.name)}</div>
