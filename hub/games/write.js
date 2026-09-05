@@ -11,7 +11,6 @@
   ];
 
   function mapPt(pt, size, pad) {
-    // makemeahanzi: 0..1024, y down
     const s = size - pad * 2;
     return {
       x: pad + (pt[0] / 1024) * s,
@@ -24,6 +23,23 @@
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  /** makemeahanzi 中線有時方向反；直筆改成上→下，橫筆左→右（幼兒筆順） */
+  function normalizeMedian(med) {
+    if (!med || med.length < 2) return (med || []).slice();
+    const a = med[0], b = med[med.length - 1];
+    const dx = Math.abs(b[0] - a[0]);
+    const dy = Math.abs(b[1] - a[1]);
+    let out = med.slice();
+    if (dy >= dx) {
+      // 直筆／斜直：畫面 y 愈大愈下面 → 起點應較上（y 較細）
+      if (a[1] > b[1]) out = out.slice().reverse();
+    } else {
+      // 橫筆：左 → 右
+      if (a[0] > b[0]) out = out.slice().reverse();
+    }
+    return out;
+  }
+
   window.DinoGames.write = {
     title: '寫字石板',
     emoji: '✍️',
@@ -31,19 +47,27 @@
     start(panel, onComplete) {
       UI.runRounds(panel, 3, (ri, p, doneRound) => {
         const lesson = LESSONS[ri % LESSONS.length];
-        const raw = STROKE_DATA[lesson.char];
-        if (!raw) {
+        const raw0 = STROKE_DATA[lesson.char];
+        if (!raw0) {
           UI.prompt(p, '搵唔到「' + lesson.char + '」筆順資料');
           doneRound(false);
           return;
         }
-        UI.prompt(p, lesson.tip + '（第 ' + (ri + 1) + '／3 字 · 要跟金色筆順）');
+        const raw = {
+          strokes: raw0.strokes,
+          medians: raw0.medians.map(normalizeMedian)
+        };
+
+        UI.prompt(p, lesson.tip + '（第 ' + (ri + 1) + '／3 字 · 由「起」寫到「止」）');
+
+        const say = p.querySelector('.buddy-say');
+        if (say) say.textContent = '跟金色線，由「起」寫到「止」（直筆由上寫落）！';
 
         const wrap = document.createElement('div');
         wrap.className = 'trace-wrap';
         const meta = document.createElement('div');
         meta.style.cssText = 'text-align:center;font-weight:800;color:#146b4d;margin-bottom:8px;font-size:18px';
-        meta.textContent = '而家寫第 1／' + raw.medians.length + ' 筆';
+        meta.textContent = '而家寫第 1／' + raw.medians.length + ' 筆（上→下／左→右）';
         wrap.appendChild(meta);
 
         const canvas = document.createElement('canvas');
@@ -58,9 +82,6 @@
         clearBtn.type = 'button';
         clearBtn.className = 'ghost';
         clearBtn.textContent = '重寫呢一筆';
-        const skipHint = document.createElement('div');
-        skipHint.style.cssText = 'width:100%;text-align:center;font-size:13px;color:#60756d;margin-top:6px';
-        skipHint.textContent = '來源：香港小學學習字詞表常用字 · 跟正確筆順';
         const okBtn = document.createElement('button');
         okBtn.type = 'button';
         okBtn.className = 'secondary';
@@ -68,6 +89,9 @@
         tools.appendChild(clearBtn);
         tools.appendChild(okBtn);
         wrap.appendChild(tools);
+        const skipHint = document.createElement('div');
+        skipHint.style.cssText = 'width:100%;text-align:center;font-size:13px;color:#60756d;margin-top:6px';
+        skipHint.textContent = '來源：香港小學學習字詞表常用字 · 正確筆順';
         wrap.appendChild(skipHint);
         p.appendChild(wrap);
 
@@ -93,7 +117,6 @@
           ctx.clearRect(0, 0, size, size);
           ctx.fillStyle = '#F6F3EC';
           ctx.fillRect(0, 0, size, size);
-          // grid
           ctx.strokeStyle = '#c5d4cb';
           ctx.lineWidth = 2;
           ctx.setLineDash([6, 6]);
@@ -106,19 +129,17 @@
           ctx.stroke();
           ctx.setLineDash([]);
 
-          // faint full character as outline using all medians
           ctx.strokeStyle = 'rgba(20,107,77,0.18)';
           ctx.lineWidth = 14;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          raw.medians.forEach((med, si) => {
+          raw.medians.forEach((med) => {
             const pts = med.map((pt) => mapPt(pt, size, pad));
             ctx.beginPath();
             pts.forEach((pt, i) => (i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y)));
             ctx.stroke();
           });
 
-          // completed strokes solid
           ctx.strokeStyle = '#146b4d';
           ctx.lineWidth = 12;
           for (let si = 0; si < strokeIndex; si++) {
@@ -128,7 +149,6 @@
             ctx.stroke();
           }
 
-          // current stroke guide (gold dashed)
           if (strokeIndex < raw.medians.length) {
             const pts = medianPts(strokeIndex);
             ctx.strokeStyle = '#b8923a';
@@ -138,21 +158,20 @@
             pts.forEach((pt, i) => (i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y)));
             ctx.stroke();
             ctx.setLineDash([]);
-            // numbered endpoints
+            // 起 = 筆順起點（上方／左方），止 = 終點
             [[pts[0], '起'], [pts[pts.length - 1], '止']].forEach(([pt, label], idx) => {
               ctx.beginPath();
               ctx.fillStyle = idx === 0 ? '#b8923a' : '#146b4d';
-              ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
+              ctx.arc(pt.x, pt.y, 14, 0, Math.PI * 2);
               ctx.fill();
               ctx.fillStyle = '#fff';
-              ctx.font = 'bold 11px sans-serif';
+              ctx.font = 'bold 12px sans-serif';
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText(label, pt.x, pt.y + 1);
             });
           }
 
-          // user ink for current stroke
           if (userPath && userPath.length > 1) {
             ctx.strokeStyle = '#0d4f38';
             ctx.lineWidth = 10;
@@ -170,15 +189,23 @@
 
         function markHits(pt) {
           const pts = medianPts(strokeIndex);
-          const thresh = 42;
+          const thresh = 44;
           pts.forEach((m, i) => {
             if (dist(pt, m) < thresh) hitMask[i] = true;
           });
         }
 
+        function directionOk() {
+          const pts = medianPts(strokeIndex);
+          if (inkStroke.length < 2 || pts.length < 2) return true;
+          const nearStart = hitMask.slice(0, Math.max(1, Math.ceil(pts.length * 0.3))).some(Boolean);
+          const nearEnd = hitMask.slice(Math.floor(pts.length * 0.7)).some(Boolean);
+          return nearStart && nearEnd;
+        }
+
         function finishStrokeOrChar() {
-          if (coveredRatio() < 0.4) {
-            UI.feedback(p, false, '跟金色線由「起」寫到「止」～');
+          if (coveredRatio() < 0.35 || !directionOk()) {
+            UI.feedback(p, false, '由金色「起」寫去「止」～（直筆由上寫落）');
             return false;
           }
           strokeIndex++;
@@ -189,7 +216,7 @@
             doneRound(true);
             return true;
           }
-          meta.textContent = '而家寫第 ' + (strokeIndex + 1) + '／' + raw.medians.length + ' 筆';
+          meta.textContent = '而家寫第 ' + (strokeIndex + 1) + '／' + raw.medians.length + ' 筆（上→下／左→右）';
           resetStrokeProgress();
           drawFrame([]);
           UI.feedback(p, true, '第 ' + strokeIndex + ' 筆 OK，繼續下一筆');
@@ -211,6 +238,9 @@
         function startDraw(e) {
           if (strokeIndex >= raw.medians.length) return;
           e.preventDefault();
+          if (canvas.setPointerCapture && e.pointerId != null) {
+            try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+          }
           drawing = true;
           inkStroke = [pos(e)];
           markHits(inkStroke[0]);
@@ -227,23 +257,20 @@
         function endDraw() {
           if (!drawing) return;
           drawing = false;
-          // auto-advance when stroke mostly covered
-          if (coveredRatio() >= 0.4 && inkStroke.length > 3) {
+          if (coveredRatio() >= 0.35 && directionOk() && inkStroke.length > 3) {
             finishStrokeOrChar();
           } else {
-            UI.feedback(p, false, '再跟金色筆順寫清楚啲');
+            UI.feedback(p, false, '再由「起」寫到「止」清楚啲');
             inkStroke = [];
             hitMask = hitMask.map(() => false);
             drawFrame([]);
           }
         }
 
-        canvas.style.touchAction = 'none';
         canvas.addEventListener('pointerdown', startDraw);
         canvas.addEventListener('pointermove', moveDraw);
         canvas.addEventListener('pointerup', endDraw);
         canvas.addEventListener('pointercancel', endDraw);
-        canvas.addEventListener('pointerleave', endDraw);
 
         clearBtn.onclick = () => {
           inkStroke = [];
@@ -253,9 +280,7 @@
         };
         okBtn.onclick = () => {
           if (strokeIndex >= raw.medians.length) return;
-          if (!finishStrokeOrChar()) {
-            /* feedback already shown */
-          }
+          finishStrokeOrChar();
         };
       }, onComplete);
     }
