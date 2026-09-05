@@ -5,6 +5,13 @@
 (function () {
   const LS_KEY = "dino-island-hub-v1";
   const CERT_NEED = 6;
+  const SITE = {
+    activityTitle: "智取恐龍島",
+    school: "佛教志蓮小學",
+    dateLabel: "2026.09.13 開放日",
+    brand: "志蓮小學活動"
+  };
+
   const ZONES = [
     { id: "write", name: "寫字石板", emoji: "✍️", art: "img/zones/write.png", subject: "中文",
       learn: "跟正確筆順寫常用字（山／水／木），連字義照顧小恐龍", play: "逐筆跟金色筆順描寫" },
@@ -129,6 +136,29 @@
     return { page: "home" };
   }
 
+
+  function siteHeader() {
+    return `
+      <header class="site-header">
+        <div class="site-brand">
+          <img src="img/logo.webp" alt="" class="site-logo" />
+          <span>${SITE.brand}</span>
+        </div>
+        <div class="site-meta">
+          <span class="pill-date">${SITE.dateLabel}</span>
+        </div>
+      </header>`;
+  }
+
+  function siteFooter() {
+    return `
+      <footer class="site-footer">
+        <div class="footer-title">${SITE.activityTitle}</div>
+        <div class="footer-school">主辦：${SITE.school}</div>
+        <div class="footer-note">照顧小恐龍 · 安全 · 開心 · 學識生活</div>
+      </footer>`;
+  }
+
   function go(path) {
     location.hash = path;
   }
@@ -136,20 +166,32 @@
   /* —— Views —— */
   function renderWelcome() {
     app.innerHTML = `
+      ${siteHeader()}
       <section class="screen-welcome">
-        <img class="mascot-hero" src="img/demo-dino.webp" alt="志蓮恐龍公仔" width="200" height="200" />
-        <img class="brand-logo" src="img/logo.webp" alt="佛教志蓮小學" width="120" />
-        <h1>智取恐龍島</h1>
-        <p class="hint">開放日探索站 · 照顧小恐龍</p>
+        <div class="hero-banner">
+          <img class="mascot-hero" src="img/demo-dino.webp" alt="志蓮恐龍公仔" />
+          <div class="hero-copy">
+            <p class="eyebrow">親子開放日 · 幼兒探索</p>
+            <h1>${SITE.activityTitle}</h1>
+            <p class="host">主辦：<strong>${SITE.school}</strong></p>
+            <p class="date-line">${SITE.dateLabel}</p>
+          </div>
+        </div>
         <div class="theme-q">
-          點樣照顧恐龍島上嘅小恐龍，令佢哋<strong>安全、開心、學識生活</strong>？
+          大問題：點樣照顧恐龍島上嘅小恐龍，令佢哋<strong>安全、開心、學識生活</strong>？
+        </div>
+        <div class="welcome-cards">
+          <div class="info-chip">🦕 11 個探索站</div>
+          <div class="info-chip">⭐ 完成 6 站攞證書</div>
+          <div class="info-chip">👆 用手指玩</div>
         </div>
         <form class="nick-form" id="nickForm">
-          <label class="hint" for="nick">輸入你嘅暱稱（最多 8 個字）</label>
+          <label class="hint" for="nick">輸入暱稱開始探險（最多 8 個字）</label>
           <input id="nick" name="nick" maxlength="8" autocomplete="off" placeholder="例如：小恐龍" required />
-          <button type="submit">出發去島上！🌴</button>
+          <button type="submit">出發去島上！</button>
         </form>
-      </section>`;
+      </section>
+      ${siteFooter()}`;
     document.getElementById("nickForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const name = (document.getElementById("nick").value || "").trim().slice(0, 8);
@@ -211,12 +253,21 @@
 
     const ready = state.zoneIds.length >= CERT_NEED;
     app.innerHTML = `
+      ${siteHeader()}
       ${topbar(state)}
+      <div class="event-strip">
+        <div>
+          <div class="event-title">${SITE.activityTitle}</div>
+          <div class="event-host">主辦：${SITE.school}</div>
+        </div>
+        <div class="event-date">${SITE.dateLabel}</div>
+      </div>
       <div class="map-hero">
         <img src="img/island-map.png" alt="恐龍島地圖概念" />
+        <div class="map-hero-cap">揀一站照顧小恐龍 · 完成 ${CERT_NEED} 站可攞證書</div>
       </div>
       <h2 class="map-title">恐龍島地圖</h2>
-      <p class="map-sub">揀一站開始照顧小恐龍 · 完成 ${CERT_NEED} 站或以上可攞證書</p>
+      <p class="map-sub">每站都有得學、有得玩 —— 同家長一齊出發！</p>
       <div class="zone-grid">${cards}</div>
       <div class="cert-cta">
         ${
@@ -224,7 +275,8 @@
             ? '<button type="button" class="ready" id="openCert">🏆 攞照顧證書！</button>'
             : `<p class="hint">再完成 ${CERT_NEED - state.zoneIds.length} 站就可以攞證書</p>`
         }
-      </div>`;
+      </div>
+      ${siteFooter()}`;
     bindTopbar();
     app.querySelectorAll(".zone-card").forEach((btn) => {
       btn.addEventListener("click", () => go("/play/" + btn.dataset.id));
@@ -248,22 +300,32 @@
     }
     const rounds = game.rounds || 1;
     app.innerHTML = `
+      ${siteHeader()}
       ${topbar(state)}
       <div class="play-shell">
         <div class="play-header">
-          <button type="button" class="ghost" id="backMap">←</button>
-          <h2>${zone.emoji} ${zone.name} <small>· ${zone.subject || ""}</small></h2>
-        </div>
-        <div class="learn-box with-mascot">
-          <img class="guide-mascot" src="${zone.art || "img/pose-macbook.webp"}" alt="" />
-          <div class="learn-text">
-            <div><b>學咩：</b>${zone.learn || ""}</div>
-            <div><b>點玩：</b>${zone.play || ""}</div>
+          <button type="button" class="ghost" id="backMap">← 地圖</button>
+          <div class="play-titles">
+            <h2>${zone.name}</h2>
+            <span class="subject-pill">${zone.subject || ""}</span>
           </div>
         </div>
-        <div class="round-dots"></div>
-        <div class="game-panel" id="gamePanel"></div>
-      </div>`;
+        <div class="play-stage">
+          <aside class="play-art">
+            <img src="${zone.art || "img/demo-dino.webp"}" alt="" />
+            <p class="play-art-cap">${SITE.activityTitle}</p>
+          </aside>
+          <div class="play-main">
+            <div class="learn-box">
+              <div><b>學咩：</b>${zone.learn || ""}</div>
+              <div><b>點玩：</b>${zone.play || ""}</div>
+            </div>
+            <div class="round-dots"></div>
+            <div class="game-panel" id="gamePanel"></div>
+          </div>
+        </div>
+      </div>
+      ${siteFooter()}`;
     bindTopbar();
     document.getElementById("backMap").onclick = () => go("/map");
     const panel = document.getElementById("gamePanel");
@@ -282,6 +344,7 @@
     const n = state.zoneIds.length;
     const ready = n >= CERT_NEED;
     app.innerHTML = `
+      ${siteHeader()}
       ${topbar(state)}
       <div class="cert-page">
         ${
@@ -296,7 +359,7 @@
                   已經喺智取恐龍島完成 <strong>${n}</strong> 個探索站，<br/>
                   學識點樣照顧小恐龍，令佢哋安全、開心、學識生活。
                 </p>
-                <p class="hint">🌿 智取恐龍島 · 開放日 🌿</p>
+                <p class="hint">🌿 ${SITE.activityTitle} · ${SITE.school} · ${SITE.dateLabel} 🌿</p>
               </div>
               <p style="margin-top:1rem"><button type="button" class="secondary" id="backMap">返地圖繼續玩</button></p>`
             : `<div class="cert-locked">
@@ -306,7 +369,8 @@
                 <button type="button" id="backMap" style="margin-top:1rem">返地圖</button>
               </div>`
         }
-      </div>`;
+      </div>
+      ${siteFooter()}`;
     bindTopbar();
     const b = document.getElementById("backMap");
     if (b) b.onclick = () => go("/map");
