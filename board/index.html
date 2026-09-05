@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#146b4d" />
+  <title>智取恐龍島 · 大螢幕榜</title>
+  <link rel="stylesheet" href="board.css" />
+</head>
+<body>
+  <header class="board-header">
+    <div class="logo">🦕 智取恐龍島</div>
+    <h1>即時照顧榜</h1>
+    <p class="sub">完成站數愈多愈前 · 同分先完成排前</p>
+    <div id="status" class="status">連接中…</div>
+  </header>
+  <main>
+    <ol id="board" class="board-list" aria-live="polite"></ol>
+    <div id="setup" class="setup hidden"></div>
+  </main>
+  <footer class="board-footer">主題：點樣照顧小恐龍，令佢哋安全、開心、學識生活？</footer>
+
+  <script src="firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="board.js"></script>
+</body>
+</html>
