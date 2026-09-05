@@ -615,3 +615,8 @@ button:disabled { opacity: 0.45; pointer-events: none; }
   .play-art img{width:100px;height:100px}
   .play-art-cap{margin:0}
 }
+
+.buddy-gif{width:100%;border-radius:18px;display:block;background:#e4f0dc;margin-bottom:10px}
+.zone-side{width:100%;border-radius:18px;display:block;aspect-ratio:1;object-fit:cover;background:#e4f0dc}
+.play-art-cheer{margin-top:6px;font-size:12px;font-weight:700;color:#5c6b63;line-height:1.35}
+.map-hero img{max-height:280px;object-fit:cover;width:100%}
