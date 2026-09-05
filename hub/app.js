@@ -263,7 +263,7 @@
         <div class="event-date">${SITE.dateLabel}</div>
       </div>
       <div class="map-hero">
-        <img src="img/island-map.png" alt="恐龍島地圖概念" />
+        <img src="img/hub-banner.png" alt="智取恐龍島：恐龍同探險小朋友" />
         <div class="map-hero-cap">揀一站照顧小恐龍 · 完成 ${CERT_NEED} 站可攞證書</div>
       </div>
       <h2 class="map-title">恐龍島地圖</h2>
@@ -312,8 +312,10 @@
         </div>
         <div class="play-stage">
           <aside class="play-art">
-            <img src="${zone.art || "img/demo-dino.webp"}" alt="" />
-            <p class="play-art-cap">${SITE.activityTitle}</p>
+            <img class="buddy-gif" src="img/buddy.gif" alt="恐龍同探險小朋友陪你玩" />
+            <img class="zone-side" src="${zone.art || "img/demo-dino.webp"}" alt="" />
+            <p class="play-art-cap">一齊玩！${SITE.activityTitle}</p>
+            <p class="play-art-cheer">恐龍同探險小隊喺側邊為你加油 💪</p>
           </aside>
           <div class="play-main">
             <div class="learn-box">
