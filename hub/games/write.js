@@ -47,8 +47,8 @@
         wrap.appendChild(meta);
 
         const canvas = document.createElement('canvas');
-        canvas.width = 340;
-        canvas.height = 340;
+        canvas.width = 360;
+        canvas.height = 360;
         canvas.style.touchAction = 'none';
         wrap.appendChild(canvas);
 
@@ -61,7 +61,12 @@
         const skipHint = document.createElement('div');
         skipHint.style.cssText = 'width:100%;text-align:center;font-size:13px;color:#60756d;margin-top:6px';
         skipHint.textContent = '來源：香港小學學習字詞表常用字 · 跟正確筆順';
+        const okBtn = document.createElement('button');
+        okBtn.type = 'button';
+        okBtn.className = 'secondary';
+        okBtn.textContent = '呢一筆寫好啦 ✓';
         tools.appendChild(clearBtn);
+        tools.appendChild(okBtn);
         wrap.appendChild(tools);
         wrap.appendChild(skipHint);
         p.appendChild(wrap);
@@ -165,14 +170,14 @@
 
         function markHits(pt) {
           const pts = medianPts(strokeIndex);
-          const thresh = 28;
+          const thresh = 42;
           pts.forEach((m, i) => {
             if (dist(pt, m) < thresh) hitMask[i] = true;
           });
         }
 
         function finishStrokeOrChar() {
-          if (coveredRatio() < 0.55) {
+          if (coveredRatio() < 0.4) {
             UI.feedback(p, false, '跟金色線由「起」寫到「止」～');
             return false;
           }
@@ -196,10 +201,10 @@
 
         function pos(e) {
           const r = canvas.getBoundingClientRect();
-          const t = e.touches ? e.touches[0] : e;
+          const src = (e.touches && e.touches[0]) ? e.touches[0] : e;
           return {
-            x: ((t.clientX - r.left) / r.width) * canvas.width,
-            y: ((t.clientY - r.top) / r.height) * canvas.height
+            x: ((src.clientX - r.left) / r.width) * canvas.width,
+            y: ((src.clientY - r.top) / r.height) * canvas.height
           };
         }
 
@@ -223,7 +228,7 @@
           if (!drawing) return;
           drawing = false;
           // auto-advance when stroke mostly covered
-          if (coveredRatio() >= 0.55 && inkStroke.length > 4) {
+          if (coveredRatio() >= 0.4 && inkStroke.length > 3) {
             finishStrokeOrChar();
           } else {
             UI.feedback(p, false, '再跟金色筆順寫清楚啲');
@@ -233,19 +238,24 @@
           }
         }
 
-        canvas.addEventListener('mousedown', startDraw);
-        canvas.addEventListener('mousemove', moveDraw);
-        canvas.addEventListener('mouseup', endDraw);
-        canvas.addEventListener('mouseleave', endDraw);
-        canvas.addEventListener('touchstart', startDraw, { passive: false });
-        canvas.addEventListener('touchmove', moveDraw, { passive: false });
-        canvas.addEventListener('touchend', endDraw);
+        canvas.style.touchAction = 'none';
+        canvas.addEventListener('pointerdown', startDraw);
+        canvas.addEventListener('pointermove', moveDraw);
+        canvas.addEventListener('pointerup', endDraw);
+        canvas.addEventListener('pointercancel', endDraw);
+        canvas.addEventListener('pointerleave', endDraw);
 
         clearBtn.onclick = () => {
           inkStroke = [];
           resetStrokeProgress();
           drawFrame([]);
           UI.feedback(p, false, '');
+        };
+        okBtn.onclick = () => {
+          if (strokeIndex >= raw.medians.length) return;
+          if (!finishStrokeOrChar()) {
+            /* feedback already shown */
+          }
         };
       }, onComplete);
     }
