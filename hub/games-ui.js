@@ -77,6 +77,10 @@ window.GamesUI = {
       }
       paintDots();
       this.clear(panel);
+      const cheer = document.createElement('div');
+      cheer.className = 'in-game-buddy';
+      cheer.innerHTML = '<img src="img/buddy.gif" alt="恐龍同探險小朋友" /><div class="buddy-say">恐龍同探險小隊陪住你，加油！</div>';
+      panel.appendChild(cheer);
       roundFactory(round, panel, (ok) => {
         if (!ok) {
           // stay on same round; roundFactory should re-enable
