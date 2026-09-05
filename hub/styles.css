@@ -516,3 +516,6 @@ button:disabled { opacity: 0.45; pointer-events: none; }
 .play-header h2 small{font-size:0.55em;font-weight:800;color:#b8923a}
 .learn-box{background:#e4f0dc;border:1px solid #cbe0b4;border-radius:16px;padding:12px 14px;margin:0 0 12px;font-size:14px;line-height:1.45;color:#17352d}
 .learn-box b{color:#146b4d}
+
+.food-tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:#fff;border:2px dashed #cbe0b4;border-radius:18px;padding:14px;margin:0 0 10px;max-width:420px;margin-left:auto;margin-right:auto}
+.food-bit{font-size:2rem;line-height:1}
