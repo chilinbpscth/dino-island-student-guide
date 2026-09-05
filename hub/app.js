@@ -6,27 +6,27 @@
   const LS_KEY = "dino-island-hub-v1";
   const CERT_NEED = 6;
   const ZONES = [
-    { id: "write", name: "寫字石板", emoji: "✍️", subject: "中文",
+    { id: "write", name: "寫字石板", emoji: "✍️", art: "img/zones/write.png", subject: "中文",
       learn: "跟正確筆順寫常用字（山／水／木），連字義照顧小恐龍", play: "逐筆跟金色筆順描寫" },
-    { id: "english", name: "導賞音箱", emoji: "🔊", subject: "英文",
+    { id: "english", name: "導賞音箱", emoji: "🔊", art: "img/zones/english.png", subject: "英文",
       learn: "聽英文詞，用圖配對（選項唔顯示英文字）", play: "撳喇叭聽，再揀啱嘅圖" },
-    { id: "putonghua", name: "普通話站", emoji: "🗣️", subject: "普通話",
+    { id: "putonghua", name: "普通話站", emoji: "🗣️", art: "img/zones/putonghua.png", subject: "普通話",
       learn: "聽普通話詞，圖像配對", play: "聽一聽再揀圖" },
-    { id: "math", name: "餵食數數", emoji: "🥗", subject: "數學",
+    { id: "math", name: "餵食數數", emoji: "🥗", art: "img/zones/math.png", subject: "數學",
       learn: "喺混雜食物入面數指定一種（約 1–5）", play: "睇碟數吓有幾多蘋果／菜葉…" },
-    { id: "weather", name: "天氣小屋", emoji: "⛅", subject: "常識",
+    { id: "weather", name: "天氣小屋", emoji: "⛅", art: "img/zones/weather.png", subject: "常識",
       learn: "天氣同生活照顧／安全連結", play: "睇天氣揀照顧方法" },
-    { id: "science", name: "小偵探", emoji: "🔍", subject: "科學",
+    { id: "science", name: "小偵探", emoji: "🔍", art: "img/zones/science.png", subject: "科學",
       learn: "觀察線索，簡單推論需要", play: "睇線索揀小恐龍需要咩" },
-    { id: "human", name: "友情樹洞", emoji: "🌳", subject: "人文",
+    { id: "human", name: "友情樹洞", emoji: "🌳", art: "img/zones/human.png", subject: "人文",
       learn: "同理心、分享輪流、禮貌", play: "情景揀友善做法" },
-    { id: "art", name: "石頭彩路", emoji: "🎨", subject: "視藝",
+    { id: "art", name: "石頭彩路", emoji: "🎨", art: "img/zones/art.png", subject: "視藝",
       learn: "顏色同形狀辨認配對", play: "揀正確色／形鋪路" },
-    { id: "music", name: "鼓石陣", emoji: "🥁", subject: "音樂",
+    { id: "music", name: "鼓石陣", emoji: "🥁", art: "img/zones/music.png", subject: "音樂",
       learn: "節奏聽辨、高低感知", play: "聽節奏跟住敲鼓" },
-    { id: "pe", name: "熱身草地", emoji: "🏃", subject: "體育",
+    { id: "pe", name: "熱身草地", emoji: "🏃", art: "img/zones/pe.png", subject: "體育",
       learn: "跟指示做動作、大肌肉協調", play: "跟圖做動作，家長確認" },
-    { id: "ict", name: "基地面板", emoji: "🖥️", subject: "資訊",
+    { id: "ict", name: "基地面板", emoji: "🖥️", art: "img/zones/ict.png", subject: "資訊",
       learn: "記順序、按鈕因果（運算思維）", play: "記閃燈次序再開鎖" }
   ];
 
@@ -201,7 +201,7 @@
       const done = state.zoneIds.includes(z.id);
       return `
         <button type="button" class="zone-card${done ? " done" : ""}" data-id="${z.id}">
-          <span class="emoji">${z.emoji}</span>
+          ${z.art ? `<img class="zone-art" src="${z.art}" alt="" />` : `<span class="emoji">${z.emoji}</span>`}
           <span class="name">${z.name}</span>
           <span class="subject">${z.subject || ""}</span>
           <span class="learn">${z.learn || ""}</span>
@@ -255,7 +255,7 @@
           <h2>${zone.emoji} ${zone.name} <small>· ${zone.subject || ""}</small></h2>
         </div>
         <div class="learn-box with-mascot">
-          <img class="guide-mascot" src="img/pose-macbook.webp" alt="" />
+          <img class="guide-mascot" src="${zone.art || "img/pose-macbook.webp"}" alt="" />
           <div class="learn-text">
             <div><b>學咩：</b>${zone.learn || ""}</div>
             <div><b>點玩：</b>${zone.play || ""}</div>
