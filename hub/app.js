@@ -6,17 +6,28 @@
   const LS_KEY = "dino-island-hub-v1";
   const CERT_NEED = 6;
   const ZONES = [
-    { id: "write", name: "寫字石板", emoji: "✍️" },
-    { id: "english", name: "導賞音箱", emoji: "🔊" },
-    { id: "putonghua", name: "普通話站", emoji: "🗣️" },
-    { id: "math", name: "數蛋站", emoji: "🥚" },
-    { id: "weather", name: "天氣小屋", emoji: "⛅" },
-    { id: "science", name: "小偵探", emoji: "🔍" },
-    { id: "human", name: "友情樹洞", emoji: "🌳" },
-    { id: "art", name: "石頭彩路", emoji: "🎨" },
-    { id: "music", name: "鼓石陣", emoji: "🥁" },
-    { id: "pe", name: "熱身草地", emoji: "🏃" },
-    { id: "ict", name: "基地面板", emoji: "🖥️" }
+    { id: "write", name: "寫字石板", emoji: "✍️", subject: "中文",
+      learn: "跟正確筆順寫常用字（山／水／木），連字義照顧小恐龍", play: "逐筆跟金色筆順描寫" },
+    { id: "english", name: "導賞音箱", emoji: "🔊", subject: "英文",
+      learn: "聽英文詞，用圖配對（照顧相關詞彙）", play: "聽完撳啱嘅圖" },
+    { id: "putonghua", name: "普通話站", emoji: "🗣️", subject: "普通話",
+      learn: "聽普通話詞，圖像配對", play: "聽一聽再揀圖" },
+    { id: "math", name: "數蛋站", emoji: "🥚", subject: "數學",
+      learn: "數數 1–10、比較多與少", play: "數蛋／揀邊邊多" },
+    { id: "weather", name: "天氣小屋", emoji: "⛅", subject: "常識",
+      learn: "天氣同生活照顧／安全連結", play: "睇天氣揀照顧方法" },
+    { id: "science", name: "小偵探", emoji: "🔍", subject: "科學",
+      learn: "觀察線索，簡單推論需要", play: "睇線索揀小恐龍需要咩" },
+    { id: "human", name: "友情樹洞", emoji: "🌳", subject: "人文",
+      learn: "同理心、分享輪流、禮貌", play: "情景揀友善做法" },
+    { id: "art", name: "石頭彩路", emoji: "🎨", subject: "視藝",
+      learn: "顏色同形狀辨認配對", play: "揀正確色／形鋪路" },
+    { id: "music", name: "鼓石陣", emoji: "🥁", subject: "音樂",
+      learn: "節奏聽辨、高低感知", play: "聽節奏跟住敲鼓" },
+    { id: "pe", name: "熱身草地", emoji: "🏃", subject: "體育",
+      learn: "跟指示做動作、大肌肉協調", play: "跟圖做動作，家長確認" },
+    { id: "ict", name: "基地面板", emoji: "🖥️", subject: "資訊",
+      learn: "記順序、按鈕因果（運算思維）", play: "記閃燈次序再開鎖" }
   ];
 
   const app = document.getElementById("app");
@@ -191,6 +202,8 @@
         <button type="button" class="zone-card${done ? " done" : ""}" data-id="${z.id}">
           <span class="emoji">${z.emoji}</span>
           <span class="name">${z.name}</span>
+          <span class="subject">${z.subject || ""}</span>
+          <span class="learn">${z.learn || ""}</span>
           ${done ? '<span class="badge">✓ 完成</span>' : '<span class="badge">去玩</span>'}
         </button>`;
     }).join("");
@@ -235,7 +248,11 @@
       <div class="play-shell">
         <div class="play-header">
           <button type="button" class="ghost" id="backMap">←</button>
-          <h2>${zone.emoji} ${zone.name}</h2>
+          <h2>${zone.emoji} ${zone.name} <small>· ${zone.subject || ""}</small></h2>
+        </div>
+        <div class="learn-box">
+          <div><b>學咩：</b>${zone.learn || ""}</div>
+          <div><b>點玩：</b>${zone.play || ""}</div>
         </div>
         <div class="round-dots"></div>
         <div class="game-panel" id="gamePanel"></div>
